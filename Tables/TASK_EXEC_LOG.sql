@@ -1,0 +1,7 @@
+CREATE TABLE TASK_EXEC_LOG 
+(
+  TASK_EXEC_ID         NUMBER NOT NULL
+, LOG_TS               TIMESTAMP(6) NOT NULL
+, LOG_MSG              VARCHAR2(1000)
+)
+;
