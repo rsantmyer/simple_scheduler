@@ -55,18 +55,18 @@ SELECT ROUND( CASE
          , job_exec.job_completed
          --, JOB_EXEC.JOB_DURATION
          , job_exec.notes
-         , error_log.process_name
-         , error_log.module_name
-         , error_log.error_code
-         , error_log.error_message
-         , error_log.reference_info
+         , system_log.process_name
+         , system_log.module AS module_name
+         , system_log.error_code
+         , system_log.message AS error_message
+         , system_log.reference_info
          FROM job
          LEFT
          JOIN job_exec
            ON job.job_id = job_exec.job_id
-         LEFT JOIN ERROR_LOG
-           ON ERROR_LOG.PROCESS_NAME = 'PKG_JOB.wrapper_run_job_p'
-          AND ERROR_LOG.TASK_QUEUE_ID = JOB_EXEC.JOB_EXEC_ID
+         LEFT JOIN SYSTEM_LOG
+           ON SYSTEM_LOG.PROCESS_NAME = 'PKG_JOB.wrapper_run_job_p'
+          AND SYSTEM_LOG.SCHEDULER_RUN_ID = JOB_EXEC.JOB_EXEC_ID
          LEFT 
          JOIN (
                 SELECT job_name

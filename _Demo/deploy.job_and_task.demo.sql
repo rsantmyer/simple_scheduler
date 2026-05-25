@@ -1,11 +1,14 @@
 SET DEFINE ON
 DEFINE APPLICATION_NAME = 'SIMPLE_SCHEDULER_DEMO'
-DEFINE DEPLOY_VERSION = '1'
+DEFINE DEPLOY_VERSION_MAJOR = '1'
+DEFINE DEPLOY_VERSION_MINOR = '0'
+DEFINE DEPLOY_VERSION_PATCH = '0'
+DEFINE DEPLOY_COMMIT_HASH = '&&1'
 
 COLUMN CURRENT_SCHEMA       new_value CURRENT_SCHEMA      
 SELECT sys_context('USERENV','CURRENT_SCHEMA') AS CURRENT_SCHEMA FROM DUAL;
 
-SPOOL deploy.&&APPLICATION_NAME..&&CURRENT_SCHEMA..log
+SPOOL deploy.&&APPLICATION_NAME..&&CURRENT_SCHEMA..&&DEPLOY_VERSION_MAJOR..&&DEPLOY_VERSION_MINOR..&&DEPLOY_VERSION_PATCH..log
 
 --PRINT BIND VARIABLE VALUES
 SET AUTOPRINT ON                    
@@ -25,9 +28,30 @@ REM SET SHOWMODE ON
 WHENEVER SQLERROR EXIT FAILURE
 WHENEVER OSERROR EXIT FAILURE
 
-EXEC PKG_APPLICATION.delete_application_p(ip_application_name => '&&APPLICATION_NAME', ip_fail_on_not_found => 'N' );
---
-EXEC pkg_application.begin_deployment_p     (ip_application_name => '&&APPLICATION_NAME', ip_version => &&DEPLOY_VERSION, ip_deployment_type => pkg_application.c_deploy_type_initial);
+BEGIN
+   pkg_application.begin_deployment_p
+      ( ip_deploy_commit_hash => '&&DEPLOY_COMMIT_HASH'
+      , ip_application_name   => '&&APPLICATION_NAME'
+      , ip_major_version      => &&DEPLOY_VERSION_MAJOR
+      , ip_minor_version      => &&DEPLOY_VERSION_MINOR
+      , ip_patch_version      => &&DEPLOY_VERSION_PATCH
+      , ip_deployment_type    => pkg_application.c_deploy_type_initial
+      );
+END;
+/
+
+BEGIN
+   pkg_application.set_deploy_notes_p
+      ( ip_application_name => '&&APPLICATION_NAME'
+      , ip_notes =>
+Q'{1.0.0
+* SIMPLE_SCHEDULER demo deploy}'
+      );
+END;
+/
+
+EXEC pkg_application.add_dependency_p(ip_application_name => '&&APPLICATION_NAME', ip_depends_on => 'CORE', ip_version_min => pkg_application.serialize_version_f('3.0.0'));
+EXEC pkg_application.add_dependency_p(ip_application_name => '&&APPLICATION_NAME', ip_depends_on => 'SIMPLE_SCHEDULER', ip_version_min => pkg_application.serialize_version_f('1.1.0'));
 
 EXEC pkg_application.add_object_p(ip_application_name => '&&APPLICATION_NAME', ip_object_name => 'PKG_JOB_TASK_DEMO'  , ip_object_type => pkg_application.c_object_type_package);
 EXEC pkg_application.add_object_p(ip_application_name => '&&APPLICATION_NAME', ip_object_name => 'PKG_JOB_TASK_DEMO'  , ip_object_type => pkg_application.c_object_type_package_body);
@@ -40,6 +64,7 @@ EXEC pkg_application.add_object_p(ip_application_name => '&&APPLICATION_NAME', i
 @./JOB_DETAIL.JOB_TASK_DEMO.sql
 
 SET DEFINE ON
+EXEC pkg_application.validate_dependencies_p(ip_application_name => '&&APPLICATION_NAME');
 EXEC pkg_application.validate_objects_p(ip_application_name => '&&APPLICATION_NAME');
 --
 EXEC pkg_application.set_deployment_complete_p(ip_application_name => '&&APPLICATION_NAME');

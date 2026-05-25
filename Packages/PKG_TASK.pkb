@@ -94,15 +94,12 @@ END;}'
     EXCEPTION WHEN OTHERS THEN
        ROLLBACK;
        l_task_exec.status := c_task_status_failed;
-       PKG_ERROR_UTIL.LogError_p(
-          in_process_name   => 'PKG_TASK.run_task_p',
-          in_module_name    => ip_task_name,
-          in_revision       => '$Rev$',
-          in_severity_level => PKG_ERROR_UTIL.C_ERROR,
-          in_error_code     => SQLCODE,
-          in_error_message  => SQLERRM,
-          in_reference_info => DBMS_UTILITY.FORMAT_ERROR_BACKTRACE(),
-          in_task_queue_id  => l_task_exec.task_exec_id);
+       PKG_SYSLOG.ERROR(
+          p_process_name => 'PKG_TASK.run_task_p',
+          p_module       => ip_task_name,
+          p_error_code   => SQLCODE,
+          p_message      => SQLERRM,
+          p_run_id       => l_task_exec.task_exec_id);
        
     END;
 

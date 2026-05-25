@@ -99,15 +99,12 @@ BEGIN
    EXCEPTION WHEN OTHERS THEN
       ROLLBACK;
       rec_job_exec.job_status := c_job_status_failed;
-      PKG_ERROR_UTIL.LogError_p(
-         in_process_name   => 'PKG_JOB.wrapper_run_job_p',
-         in_module_name    => ip_job_name,
-         in_revision       => '$Rev$',
-         in_severity_level => PKG_ERROR_UTIL.C_ERROR,
-         in_error_code     => SQLCODE,
-         in_error_message  => SQLERRM,
-         in_reference_info => DBMS_UTILITY.FORMAT_ERROR_BACKTRACE(),
-         in_task_queue_id  => rec_job_exec.job_exec_id);
+      PKG_SYSLOG.ERROR(
+         p_process_name => 'PKG_JOB.wrapper_run_job_p',
+         p_module       => ip_job_name,
+         p_error_code   => SQLCODE,
+         p_message      => SQLERRM,
+         p_run_id       => rec_job_exec.job_exec_id);
    END;
 
    UPDATE job_exec
