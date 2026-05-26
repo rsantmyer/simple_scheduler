@@ -18,3 +18,4 @@ dependencies:
 
 scripts:
   install: Deployment_Manifests/deploy.sql
+  validate: Tests/smoke_test.sql

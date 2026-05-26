@@ -19,3 +19,13 @@ This creates `target/simple_scheduler-1.1.0.zip` and includes generated
 build provenance at `META-INF/simple_scheduler-build.properties`.
 
 See [Maven Packaging](docs/maven-packaging.md) for details.
+
+## Smoke Test
+After deploying to a live database schema, run:
+
+```sql
+@Tests/smoke_test.sql
+```
+
+The smoke test creates a temporary task and job, runs them, validates successful
+execution rows, and removes its test data.
