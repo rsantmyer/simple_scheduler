@@ -54,7 +54,7 @@ END;
 /
 
 --DEPENDENCIES
-EXEC pkg_application.add_dependency_p  (ip_application_name => '&&APPLICATION_NAME', ip_depends_on => 'CORE', ip_version_min => pkg_application.serialize_version_f('3.0.0'));
+EXEC pkg_application.add_dependency_p  (ip_application_name => '&&APPLICATION_NAME', ip_depends_on => 'CORE', ip_version_min => pkg_application.serialize_version_f('3.3.0'));
 EXEC pkg_application.add_dependency_p  (ip_application_name => '&&APPLICATION_NAME', ip_depends_on => 'UTL_INTERVAL', ip_version_min => pkg_application.serialize_version_f('1.0.0'));
 --SYSTEM/OBJECT PRIVILEGES
 EXEC pkg_application.add_obj_priv_p  (ip_application_name => '&&APPLICATION_NAME', ip_owner => 'SYS', ip_type => 'VIEW', ip_name => 'GV_$INSTANCE', ip_privilege => 'SELECT');

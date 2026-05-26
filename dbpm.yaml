@@ -1,0 +1,20 @@
+package:
+  name: simple_scheduler
+  version: "1.1.0"
+  description: Simple Oracle job and task scheduler
+  vendor: rsantmyer
+  license: Apache-2.0
+
+database:
+  platform: oracle
+  minimum_version: "19c"
+
+core:
+  minimum_version: "3.3.0"
+
+dependencies:
+  - name: utl_interval
+    version: "^1.0.0"
+
+scripts:
+  install: Deployment_Manifests/deploy.sql
